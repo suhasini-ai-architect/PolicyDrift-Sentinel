@@ -1,75 +1,31 @@
-PolicyDrift-Sentinel
-Enterprise AI Regulatory Compliance & Drift Auditor
-📖 Overview
-In 2026, the speed of regulatory change (EU AI Act, GDPR, RBI Guidelines) often outpaces manual corporate policy updates. PolicyDrift-Sentinel is a privacy-first, local-LLM solution designed to automate the detection of "Policy Drift."
+#  PolicyDrift-Sentinel: AI Regulatory Gap Analysis
 
-It compares new external regulations against existing internal policies to identify compliance gaps, legal conflicts, and required remediation steps—all without sensitive data ever leaving the corporate network.
+[![Hugging Face Space](https://img.shields.io/badge/Live%20Demo-Hugging%20Face-orange?logo=huggingface)](YOUR_HF_SPACE_URL_HERE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 
-🏗️ Architecture & Design
-This project demonstrates a Privacy-First AI Design Pattern for highly regulated industries (Finance, Healthcare, Government).
+###  The Problem: "Regulatory Drift"
+In 15 years of architecting Azure solutions, I've observed that the gap between **Global Regulations** (GDPR, EU AI Act, RBI) and **Internal Corporate Policies** is a significant operational risk. **PolicyDrift-Sentinel** automates the detection of these discrepancies using private, localized Small Language Models (SLMs).
 
-Core Engine: Microsoft Phi-4-Mini (3.8B Parameters). Chosen for its high reasoning density and ability to run on edge hardware with <8GB RAM.
+---
 
-Inference Orchestration: Ollama for local model lifecycle management.
+## Architecture Overview
+This system is built for **Data Sovereignty**. Unlike standard LLMs, this Sentinel runs locally to ensure that sensitive internal policy documents never leave the enterprise perimeter.
 
-UI/UX: Streamlit for a professional, architect-led auditor dashboard.
+* **Model:** Microsoft **Phi-4-Mini** (3.8B Parameters)
+* **Inference:** [Ollama](https://ollama.ai/) (Local SLM Engine)
+* **Interface:** Streamlit
+* **Target:** Governance, Risk, and Compliance (GRC) automation.
 
-Deployment: Hybrid-ready (Local execution for data sovereignty + Hugging Face Spaces for stakeholder demos).
+## Demo Preview
+![PolicyDrift Sentinel Screenshot](assets/money-shot.png)
+*(Replace this with your "Money Shot" tomorrow!)*
 
- Key Features
-Automated Conflict Detection: Uses semantic reasoning to find contradictions between legal texts.
+---
 
-Zero-Data Leakage: Engineered to run entirely offline using Small Language Models (SLMs).
+##  Quick Start (Local Setup)
 
-Quantized Efficiency: Optimized to run on standard enterprise laptops (7GB-8GB RAM available).
-
-Actionable Remediation: Generates specific technical and legal steps to close compliance gaps.
-
-🚀 Getting Started
-Prerequisites
-Python 3.11+
-
-Ollama installed
-
-Setup
-Clone the Repo:
-
-Bash
-git clone https://github.com/suhasini-ai-architect/PolicyDrift-Sentinel.git
-cd PolicyDrift-Sentinel
-Install Dependencies:
-
-Bash
-pip install -r requirements.txt
-Pull the Model:
-
-Bash
+### 1. Prerequisites
+Install [Ollama](https://ollama.ai/) and pull the Phi-4-Mini model:
+```bash
 ollama pull phi4-mini
-Run the App:
-
-Bash
-streamlit run app.py
-
-📊 Sample Audit Output
-Scenario: Comparing an older Global Data Policy against the 2026 Sovereign Cloud Regulations.
-
-Finding: Identified AES-128 encryption vs. mandatory AES-256 requirement.
-
-Finding: Flagged 90-day deletion cycle vs. 30-day "Right to be Forgotten" SLA.
-
-Result: High-confidence remediation steps generated for infrastructure and legal alignment.
-
-Professional Context
-This project is part of the Architecting AI Systems portfolio, focusing on the intersection of Cloud Architecture, AI Governance, and Enterprise Security.
-
-Guardian-Mesh: AI Governance & Guardrails.
-
-Autonomous-Security-Mesh: AI-Driven Defense.
-
-PolicyDrift-Sentinel: Regulatory Compliance (Current).
-
-📄 License
-Distributed under the Apache License 2.0. See LICENSE for more information.
-
-Author
-Suhasini K. Senior Azure Solution Architect (15 YOE) | AI Architect LinkedIn Profile | YouTube: Architecting AI Systems
