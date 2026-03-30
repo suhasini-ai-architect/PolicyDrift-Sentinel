@@ -2,71 +2,111 @@ import streamlit as st
 import os
 import time
 
-# 1. Environment Detection
+# 1. Environment Detection (Hugging Face vs. Local)
 IS_HF_SPACE = "SPACE_ID" in os.environ
 
+# 2. Local-Only Import for Ollama
 try:
     import ollama
 except ImportError:
     ollama = None
 
+# --- UI Configuration ---
 st.set_page_config(page_title="PolicyDrift Sentinel", page_icon="🛡️", layout="wide")
 
-# --- UI Header ---
-st.title("🛡️ PolicyDrift Sentinel")
-st.markdown("### *Enterprise-Grade Regulatory Auditor*")
+# --- Custom Styling ---
+st.markdown("""
+    <style>
+    .main { background-color: #f5f7f9; }
+    .stTextArea textarea { font-size: 14px !format; }
+    </style>
+    """, unsafe_allow_html=True)
 
-# --- Sidebar ---
+# --- Sidebar Architecture Info ---
 with st.sidebar:
-    st.header("System Status")
+    st.title("⚙️ System Arch")
     if IS_HF_SPACE:
-        st.success("🌐 Running on Hugging Face Cloud")
-        st.info("Demo Mode: Uses synthetic audit logic.")
+        st.success("🌐 Environment: Hugging Face Cloud")
+        st.caption("Mode: Synthetic Demo (No Local GPU)")
     else:
-        st.success("💻 Running on Local Laptop")
-        st.info("Live Mode: Powered by Phi-4-Mini (3.8B)")
+        st.success("💻 Environment: Local Workstation")
+        st.caption("Mode: Live Phi-4-Mini Inference")
     
     st.divider()
-    st.write("**Architect:** Suhasini K.")
-    st.write("**Experience:** 15 YOE Solutions Architect")
+    st.markdown("### **Architect Profile**")
+    st.write("**Suhasini K.**")
+    st.write("Senior Azure Solution Architect")
+    st.write("15 YOE Enterprise Architecture")
+    st.divider()
+    st.info("This Sentinel uses SLMs (Small Language Models) to perform high-density regulatory gap analysis.")
 
-# --- Main App ---
+# --- Main App Interface ---
+st.title("🛡️ PolicyDrift Sentinel")
+st.subheader("Automated Regulatory Compliance & Drift Auditor")
+
 col1, col2 = st.columns(2)
-with col1:
-    new_reg = st.text_area("📄 New Regulation (Source A):", placeholder="e.g., EU AI Act 2026...", height=250)
-with col2:
-    old_policy = st.text_area("🏢 Internal Policy (Source B):", placeholder="e.g., Corporate Data Policy v1.2...", height=250)
 
+with col1:
+    st.markdown("#### 📄 New Regulation (Source A)")
+    new_reg = st.text_area("Paste the new law or regulatory update here:", 
+                           placeholder="e.g., EU AI Act 2026, GDPR Update, RBI Master Circular...", 
+                           height=300)
+
+with col2:
+    st.markdown("#### 🏢 Internal Policy (Source B)")
+    old_policy = st.text_area("Paste your existing corporate policy here:", 
+                              placeholder="e.g., Data Governance Policy v2.1, InfoSec Manual...", 
+                              height=300)
+
+# --- Audit Execution ---
 if st.button("🚀 Run Compliance Audit", use_container_width=True):
     if not new_reg or not old_policy:
-        st.error("Please provide both documents to begin the audit.")
+        st.warning("Please provide both documents to begin the cross-correlation audit.")
     else:
-        with st.spinner("Phi-4-Mini is analyzing policy alignment..."):
+        with st.spinner("Phi-4-Mini is analyzing high-dimensional policy drift..."):
+            
+            # CASE 1: Running on Hugging Face (Demo Mode)
             if IS_HF_SPACE or ollama is None:
-                # --- DEMO MODE ---
-                time.sleep(2) # Simulate processing
-                st.subheader("🚩 Audit Findings (Demo)")
-                st.error("**Finding 1:** Conflict detected in 'Data Retention' clause.")
-                st.warning("**Finding 2:** Missing 'Model Transparency' requirements.")
+                time.sleep(1.5) # Simulate processing time
+                st.subheader("✅ Compliance Audit Report (Demo Mode)")
+                st.error("### 🚩 Critical Drift Detected")
+                st.markdown("""
+                **Summary of Drift:**
+                The internal policy is non-compliant regarding **Data Encryption standards** (AES-128 vs AES-256), **Data Sovereignty** (Global Lake vs Region-Locked), and **Deletion SLAs** (90 days vs 30 days).
+                
+                **Recommended Remediation:**
+                1. **Upgrade Encryption:** Transition from AES-128 to AES-256 immediately.
+                2. **Regionalize Storage:** Move PII from the global lake to a region-locked sovereign cloud.
+                3. **SLA Alignment:** Revise the 'Right to be Forgotten' workflow to a 30-day purge cycle.
+                """)
+                st.info("Note: To run this live on your own hardware with private data, clone the repo from GitHub.")
+
+            # CASE 2: Running Locally (Live Mode)
             else:
-                # --- LIVE MODE ---
                 try:
+                    # Professional Prompt Engineering
                     prompt = f"""
-                    Identify specific legal conflicts (Policy Drift) between these texts:
-                    Regulation: {new_reg}
+                    System: You are an expert Regulatory Compliance Auditor.
+                    Task: Identify specific 'Policy Drift' (conflicts) between the New Regulation and the Internal Policy.
+                    
+                    New Regulation: {new_reg}
                     Internal Policy: {old_policy}
                     
-                    Format as: 
+                    Format your response with:
                     1. Summary of Drift
                     2. Specific Non-Compliant Clauses
-                    3. Recommended Remediation
+                    3. Recommended Remediation (Technical and Operational)
                     """
+                    
                     response = ollama.generate(model='phi4-mini', prompt=prompt)
-                    st.subheader("✅ Live Audit Result")
+                    
+                    st.subheader("✅ Live Audit Report")
                     st.markdown(response['response'])
+                
                 except Exception as e:
                     st.error(f"Ollama Error: {e}")
-                    st.info("Make sure 'ollama pull phi4-mini' is complete in your terminal.")
+                    st.info("Check if 'ollama run phi4-mini' is active in your terminal.")
 
+# --- Footer ---
 st.divider()
-st.caption("🔒 Security Note: In Local Mode, all processing happens on your RAM. No enterprise data is sent to the cloud.")
+st.caption("🔒 Privacy Guard: In Local Mode, no data leaves your machine. Designed for Tier-1 Enterprise Security.")
