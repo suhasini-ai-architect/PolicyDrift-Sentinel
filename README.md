@@ -49,6 +49,16 @@ Run the App:
 
 Bash
 streamlit run app.py
+
+📊 Sample Audit Output
+Scenario: Comparing an older Global Data Policy against the 2026 Sovereign Cloud Regulations.
+
+Finding: Identified AES-128 encryption vs. mandatory AES-256 requirement.
+
+Finding: Flagged 90-day deletion cycle vs. 30-day "Right to be Forgotten" SLA.
+
+Result: High-confidence remediation steps generated for infrastructure and legal alignment.
+
 Professional Context
 This project is part of the Architecting AI Systems portfolio, focusing on the intersection of Cloud Architecture, AI Governance, and Enterprise Security.
 
