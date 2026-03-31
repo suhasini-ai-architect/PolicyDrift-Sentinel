@@ -43,7 +43,8 @@ Built for **Data Sovereignty & Enterprise Security**:
 
 ## Architecture Diagram
 
-![PolicyDrift Sentinel Screenshot](assets/PolicyDrift.png)
+![PolicyDrift Sentinel Screenshot](asset/PolicyDrift.PNG)
+
 
 
 ---
@@ -51,7 +52,7 @@ Built for **Data Sovereignty & Enterprise Security**:
 
 ##  Demo Preview
 
-![PolicyDrift Sentinel Screenshot](assets/PolicyDrift.gif)
+![PolicyDrift Sentinel Screenshot](asset/PolicyDriftt.GIF)
 
 
 ---
