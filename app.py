@@ -1,112 +1,117 @@
 import streamlit as st
-import os
-import time
+import requests
 
-# 1. Environment Detection (Hugging Face vs. Local)
-IS_HF_SPACE = "SPACE_ID" in os.environ
+st.set_page_config(page_title="PolicyDrift Sentinel", layout="wide")
 
-# 2. Local-Only Import for Ollama
-try:
-    import ollama
-except ImportError:
-    ollama = None
-
-# --- UI Configuration ---
-st.set_page_config(page_title="PolicyDrift Sentinel", page_icon="🛡️", layout="wide")
-
-# --- Custom Styling ---
-st.markdown("""
-    <style>
-    .main { background-color: #f5f7f9; }
-    .stTextArea textarea { font-size: 14px !format; }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- Sidebar Architecture Info ---
-with st.sidebar:
-    st.title("⚙️ System Arch")
-    if IS_HF_SPACE:
-        st.success("🌐 Environment: Hugging Face Cloud")
-        st.caption("Mode: Synthetic Demo (No Local GPU)")
-    else:
-        st.success("💻 Environment: Local Workstation")
-        st.caption("Mode: Live Phi-4-Mini Inference")
-    
-    st.divider()
-    st.markdown("### **Architect Profile**")
-    st.write("**Suhasini K.**")
-    st.write("Senior Azure Solution Architect")
-    st.write("15 YOE Enterprise Architecture")
-    st.divider()
-    st.info("This Sentinel uses SLMs (Small Language Models) to perform high-density regulatory gap analysis.")
-
-# --- Main App Interface ---
 st.title("🛡️ PolicyDrift Sentinel")
 st.subheader("Automated Regulatory Compliance & Drift Auditor")
 
-col1, col2 = st.columns(2)
+# Detect Hugging Face environment
+IS_HF_SPACE = "HF_SPACE" in st.secrets if hasattr(st, "secrets") else False
 
-with col1:
-    st.markdown("#### 📄 New Regulation (Source A)")
-    new_reg = st.text_area("Paste the new law or regulatory update here:", 
-                           placeholder="e.g., EU AI Act 2026, GDPR Update, RBI Master Circular...", 
-                           height=300)
+# Mode badge
+if IS_HF_SPACE:
+    st.success("🟢 Mode: Demo (Simulated)")
+else:
+    st.success("🟢 Mode: Live AI (Ollama)")
 
-with col2:
-    st.markdown("#### 🏢 Internal Policy (Source B)")
-    old_policy = st.text_area("Paste your existing corporate policy here:", 
-                              placeholder="e.g., Data Governance Policy v2.1, InfoSec Manual...", 
-                              height=300)
+# Sample Data
+sample_reg = "Personal data must not be retained longer than necessary (GDPR Article 5)."
+sample_policy = "We retain user financial data for 7 years for audit purposes."
 
-# --- Audit Execution ---
-if st.button("🚀 Run Compliance Audit", use_container_width=True):
-    if not new_reg or not old_policy:
-        st.warning("Please provide both documents to begin the cross-correlation audit.")
+# Inputs
+new_reg = st.text_area("📄 New Regulation (Source A)", value="")
+old_policy = st.text_area("🏢 Internal Policy (Source B)", value="")
+
+# Demo Button
+if st.button("💡 Try Sample Compliance Audit"):
+    new_reg = sample_reg
+    old_policy = sample_policy
+
+# Extract helper
+def extract_section(text, section):
+    try:
+        part = text.split(section + ":")[1]
+        return part.split("\n")[0].strip()
+    except:
+        return "Not found"
+
+# Analysis
+if st.button("🔍 Run Analysis") and new_reg and old_policy:
+
+    if IS_HF_SPACE:
+        # Demo output
+        response_text = """
+Detected Gap: Data Retention Policy Violation
+Risk Level: HIGH
+Regulation Reference: GDPR Article 5 – Storage Limitation Principle
+Recommended Action:
+- Define purpose-based retention policy
+- Implement auto-deletion workflows
+- Add audit logging
+- Align retention with regulatory necessity
+"""
+
+        st.warning("⚠️ Demo Mode uses simulated output. Run locally with Ollama for real analysis.")
+
     else:
-        with st.spinner("Phi-4-Mini is analyzing high-dimensional policy drift..."):
-            
-            # CASE 1: Running on Hugging Face (Demo Mode)
-            if IS_HF_SPACE or ollama is None:
-                time.sleep(1.5) # Simulate processing time
-                st.subheader("✅ Compliance Audit Report (Demo Mode)")
-                st.error("### 🚩 Critical Drift Detected")
-                st.markdown("""
-                **Summary of Drift:**
-                The internal policy is non-compliant regarding **Data Encryption standards** (AES-128 vs AES-256), **Data Sovereignty** (Global Lake vs Region-Locked), and **Deletion SLAs** (90 days vs 30 days).
-                
-                **Recommended Remediation:**
-                1. **Upgrade Encryption:** Transition from AES-128 to AES-256 immediately.
-                2. **Regionalize Storage:** Move PII from the global lake to a region-locked sovereign cloud.
-                3. **SLA Alignment:** Revise the 'Right to be Forgotten' workflow to a 30-day purge cycle.
-                """)
-                st.info("Note: To run this live on your own hardware with private data, clone the repo from GitHub.")
+        # Real Ollama call
+        try:
+            prompt = f"""
+You are an expert Regulatory Compliance Auditor.
 
-            # CASE 2: Running Locally (Live Mode)
-            else:
-                try:
-                    # Professional Prompt Engineering
-                    prompt = f"""
-                    System: You are an expert Regulatory Compliance Auditor.
-                    Task: Identify specific 'Policy Drift' (conflicts) between the New Regulation and the Internal Policy.
-                    
-                    New Regulation: {new_reg}
-                    Internal Policy: {old_policy}
-                    
-                    Format your response with:
-                    1. Summary of Drift
-                    2. Specific Non-Compliant Clauses
-                    3. Recommended Remediation (Technical and Operational)
-                    """
-                    
-                    response = ollama.generate(model='phi4-mini', prompt=prompt)
-                    
-                    st.subheader("✅ Live Audit Report")
-                    st.markdown(response['response'])
-                
-                except Exception as e:
-                    st.error(f"Ollama Error: {e}")
-                    st.info("Check if 'ollama run phi4-mini' is active in your terminal.")
+Compare:
 
-# --- Footer ---
-st.divider()
-st.caption("🔒 Privacy Guard: In Local Mode, no data leaves your machine. Designed for Tier-1 Enterprise Security.")
+New Regulation:
+{new_reg}
+
+Internal Policy:
+{old_policy}
+
+Return STRICTLY in this format:
+
+Detected Gap:
+<one line>
+
+Risk Level:
+<LOW / MEDIUM / HIGH>
+
+Regulation Reference:
+<specific law>
+
+Recommended Action:
+- Action 1
+- Action 2
+- Action 3
+"""
+
+            res = requests.post(
+                "http://localhost:11434/api/generate",
+                json={"model": "phi", "prompt": prompt, "stream": False}
+            )
+
+            response_text = res.json()["response"]
+
+        except Exception as e:
+            st.error("❌ Ollama not running. Please start Ollama.")
+            st.stop()
+
+    # Display structured output
+    st.markdown("## 🔍 Analysis Result")
+
+    st.markdown("### ⚠️ Detected Gap")
+    st.write(extract_section(response_text, "Detected Gap"))
+
+    st.markdown("### 📊 Risk Level")
+    st.write(extract_section(response_text, "Risk Level"))
+
+    st.markdown("### 📜 Regulation Reference")
+    st.write(extract_section(response_text, "Regulation Reference"))
+
+    st.markdown("### 🛠️ Recommended Action")
+    actions = response_text.split("Recommended Action:")[-1].strip()
+    st.write(actions)
+
+# Footer
+st.markdown("---")
+st.caption("🔒 Privacy Guar
