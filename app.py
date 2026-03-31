@@ -19,7 +19,6 @@ st.markdown("""
 <style>
     .main { background-color: #f8f9fa; }
     .stTextArea textarea { font-size: 14px !important; border-radius: 10px; }
-    .reportview-container { background: #f0f2f6; }
     .result-card {
         background-color: white;
         padding: 20px;
@@ -86,72 +85,83 @@ with col_b:
                              value=st.session_state.get("old_policy", ""), height=200)
 
 # --- Action ---
-if st.button("🚀 Execute Architecture Audit", use_container_width=True) or st.session_state.get("auto_run", False):
+run_clicked = st.button("🚀 Execute Architecture Audit", use_container_width=True)
+
+if run_clicked or st.session_state.get("auto_run", False):
     if not new_reg or not old_policy:
         st.warning("Please provide both documents for analysis.")
     else:
+        # Placeholder for output
+        output_container = st.container()
+        
         with st.spinner("🧠 SLM Reasoning in progress..."):
             
-            # --- Logic: Demo vs Live ---
+            # --- CASE 1: DEMO MODE (Hugging Face or No Ollama) ---
             if IS_HF_SPACE or ollama is None:
-                time.sleep(1.5) # Simulate thinking
-                # Formatted Mock Data
-                gap = "Encryption Standard Mismatch (AES-128 vs AES-256)"
-                risk = "CRITICAL"
-                ref = "ISO/IEC 27001 & GDPR Art. 32"
-                remediation = """
-                1. Upgrade database encryption schema to AES-256.
-                2. Automate Key Rotation using Azure Key Vault (90-day trigger).
-                3. Update internal Compliance Registry to reflect new SLAs.
-                """
+                time.sleep(1.0) 
+                with output_container:
+                    st.divider()
+                    st.markdown("## 🔍 Audit Results (Demo Mode)")
+                    
+                    m1, m2, m3 = st.columns(3)
+                    with m1: st.markdown('<div class="metric-box"><strong>Risk Status</strong><br><span style="color:red; font-size:20px;">CRITICAL</span></div>', unsafe_allow_html=True)
+                    with m2: st.markdown('<div class="metric-box"><strong>Audit ID</strong><br>PDS-2026-X1</div>', unsafe_allow_html=True)
+                    with m3: st.markdown('<div class="metric-box"><strong>Engine</strong><br>Phi-4-Mini</div>', unsafe_allow_html=True)
+
+                    st.markdown(f"""
+                    <div class="result-card">
+                        <h4>🚩 Primary Policy Drift Detected</h4>
+                        <p style="color:#d9534f; font-weight:bold;">Encryption Standard Mismatch (AES-128 vs AES-256)</p>
+                        <hr>
+                        <h5>📖 Regulatory Reference</h5>
+                        <p>ISO/IEC 27001 & GDPR Art. 32</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                    with st.expander("🛠️ View Step-by-Step Remediation Plan", expanded=True):
+                        st.markdown("""
+                        1. **Upgrade Encryption:** Transition database storage to AES-256.
+                        2. **Automate Rotation:** Implement Azure Key Vault with 90-day automated rotation.
+                        3. **Policy Alignment:** Update Internal SOP to reflect mandatory 90-day cycles.
+                        """)
+                    st.info("💡 Running in Sandbox Demo Mode. Deploy locally for full private analysis.")
+
+            # --- CASE 2: LIVE MODE (Local Ollama with Streaming) ---
             else:
                 try:
-                    prompt = f"Audit the drift between New Reg: {new_reg} and Internal Policy: {old_policy}. Identify Gaps, Risk Level, and Remediation steps."
-                    res = ollama.generate(model='phi4-mini', prompt=prompt)
-                    # For live mode, we display the raw SLM reasoning in a clean box
-                    gap = "AI Analyzed Discrepancy"
-                    risk = "Analyzed"
-                    ref = "Regulatory Alignment"
-                    remediation = res['response']
-                except Exception:
-                    st.error("Ollama not found locally.")
-                    st.stop()
+                    with output_container:
+                        st.divider()
+                        st.markdown("## 🔍 Live Analysis Result")
+                        
+                        m1, m2, m3 = st.columns(3)
+                        with m1: st.markdown('<div class="metric-box"><strong>Risk Status</strong><br><span style="color:orange; font-size:20px;">ANALYZING</span></div>', unsafe_allow_html=True)
+                        with m2: st.markdown('<div class="metric-box"><strong>Audit ID</strong><br>PDS-LIVE-01</div>', unsafe_allow_html=True)
+                        with m3: st.markdown('<div class="metric-box"><strong>Engine</strong><br>Local Phi-4</div>', unsafe_allow_html=True)
 
-            # --- Visual Output (THE MONEY SHOT SECTION) ---
-            st.divider()
-            st.markdown("## 🔍 Audit Results")
-            
-            # Top row metrics
-            m1, m2, m3 = st.columns(3)
-            with m1:
-                st.markdown(f'<div class="metric-box"><strong>Risk Status</strong><br><span style="color:red; font-size:20px;">{risk}</span></div>', unsafe_allow_html=True)
-            with m2:
-                st.markdown(f'<div class="metric-box"><strong>Audit ID</strong><br>PDS-2026-X1</div>', unsafe_allow_html=True)
-            with m3:
-                st.markdown(f'<div class="metric-box"><strong>Engine</strong><br>Phi-4-Mini</div>', unsafe_allow_html=True)
+                        prompt = f"""
+                        Audit the drift between these documents:
+                        REGULATION: {new_reg}
+                        INTERNAL POLICY: {old_policy}
+                        
+                        Identify specific Gaps, Risk Level, and Remediation steps. 
+                        Keep it concise and professional.
+                        """
+                        
+                        # Streaming Generator
+                        def stream_data():
+                            response = ollama.generate(model='phi4-mini', prompt=prompt, stream=True)
+                            for chunk in response:
+                                yield chunk['response']
+                        
+                        st.write_stream(stream_data)
 
-            st.markdown("<br>", unsafe_allow_html=True)
+                except Exception as e:
+                    st.error(f"⚠️ Local Model Error: {e}")
+                    st.info("Ensure Ollama is running and 'phi4-mini' is pulled.")
 
-            # Detailed Findings
-            with st.container():
-                st.markdown(f"""
-                <div class="result-card">
-                    <h4>🚩 Primary Policy Drift Detected</h4>
-                    <p style="color:#d9534f; font-weight:bold;">{gap}</p>
-                    <hr>
-                    <h5>📖 Regulatory Reference</h5>
-                    <p>{ref}</p>
-                </div>
-                """, unsafe_allow_html=True)
-
-            with st.expander("🛠️ View Step-by-Step Remediation Plan", expanded=True):
-                st.markdown(remediation)
-
-            if IS_HF_SPACE:
-                st.info("💡 Note: Running in Sandbox Demo Mode. Deploy locally for full PII-safe analysis.")
-
+        # Cleanup
         st.session_state["auto_run"] = False
 
 # --- Footer ---
 st.divider()
-st.caption("PolicyDrift-Sentinel | Developed by Suhasini K. | Built for Private Enterprise Governance")
+st.caption("PolicyDrift-Sentinel | Developed by Suhasini K. | Senior Azure Solution Architect Portfolio")
