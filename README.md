@@ -40,22 +40,17 @@ Built for **Data Sovereignty & Enterprise Security**:
 
 ---
 
-
 ## Architecture Diagram
+High-level system design of PolicyDrift Sentinel:
 
-![PolicyDrift Sentinel Screenshot](asset/PolicyDrift.PNG)
-
-
-
----
-
-
-##  Demo Preview
-
-![PolicyDrift Sentinel Screenshot](asset/PolicyDriftt.GIF)
-
+![Architecture](./asset/PolicyDrift.png)
 
 ---
+
+## Live Demo
+See the compliance audit in action:
+
+![Demo](./asset/PolicyDrift.gif)
 
 ##  Quick Start (Local Setup)
 
