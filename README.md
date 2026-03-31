@@ -40,11 +40,19 @@ Built for **Data Sovereignty & Enterprise Security**:
 
 ---
 
+
+## Architecture Diagram
+
+![PolicyDrift Sentinel Screenshot](assets/PolicyDrift.jpeg)
+
+
+---
+
+
 ##  Demo Preview
 
-![PolicyDrift Sentinel Screenshot](assets/money-shot.png)
+![PolicyDrift Sentinel Screenshot](assets/PolicyDrift.gif)
 
-> Add your screenshot or GIF in `assets/`
 
 ---
 
