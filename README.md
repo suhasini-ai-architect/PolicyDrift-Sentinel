@@ -43,7 +43,7 @@ Built for **Data Sovereignty & Enterprise Security**:
 
 ## Architecture Diagram
 
-![PolicyDrift Sentinel Screenshot](assets/PolicyDrift.jpeg)
+![PolicyDrift Sentinel Screenshot](assets/PolicyDrift.png)
 
 
 ---
